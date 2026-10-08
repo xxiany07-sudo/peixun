@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "gpio.h"
+#include "Stepper.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -97,6 +98,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    
+    Stepper_run(1,2*400,1);
+    HAL_Delay(1000);
+    Stepper_run(0,4*400,1);
+    HAL_Delay(1000);
+    
+
   }
   /* USER CODE END 3 */
 }
