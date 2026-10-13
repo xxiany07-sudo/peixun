@@ -18,8 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "gpio.h"
-#include "Stepper.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -44,7 +44,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint16_t unit_light=1;
+uint16_t duty=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -87,8 +88,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+  HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -98,13 +102,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    
-    Stepper_run(1,2*400,1);
-    HAL_Delay(1000);
-    Stepper_run(0,4*400,1);
-    HAL_Delay(1000);
-    
-
   }
   /* USER CODE END 3 */
 }
@@ -149,7 +146,21 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*htim){
+  if(htim->Instance==TIM1){
+      duty+=unit_light;
+      if(duty>=999){
+        duty=999;
+        unit_light=-1;
+      }
+      if(duty<=0){
+        duty=0;
+        unit_light=1;
+      }
 
+      __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,duty);
+  }
+}
 /* USER CODE END 4 */
 
 /**
